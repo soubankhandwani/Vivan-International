@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --main-bg: #181c24;
+      --panel-bg: #23272f;
+      --header-bg: #2e3748;
+      --accent: #0b75df;
+      --accent2: #00fff7;
+      --input-border: #47C9FF;
+      --border-radius: 12px;
+      --font-main: 'Segoe UI', Arial, sans-serif;
+    }
+    body {
+      background: var(--main-bg);
+      color: #f5f5f5;
+      font-family: var(--font-main);
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 30px auto;
+      background: var(--panel-bg);
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+      padding: 0;
+      min-height: 90vh;
+      overflow: hidden;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      background: var(--header-bg);
+      border-top-left-radius: var(--border-radius);
+      border-top-right-radius: var(--border-radius);
+      padding: 16px 32px;
+      gap: 18px;
+    }
+    .logo {
+      height: 48px;
+      width: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #fff;
+      border: 2px solid #eee;
+    }
+    h1 {
+      margin: 0;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+    .main-content {
+      display: flex;
+      flex-direction: row;
+      padding: 32px;
+      gap: 32px;
+    }
+    .left-panel {
+      flex: 2.8;
+      min-width: 420px;
+      max-width: 520px;
+      padding-right: 32px;
+    }
+    .right-panel {
+      flex: 1.2;
+      min-width: 340px;
+      padding-left: 56px;
+      border-left: 3px solid #444;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .status-section h2 {
+      color: var(--accent2);
+      font-size: 2rem;
+      margin-bottom: 24px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      margin-bottom: 20px;
+    }
+    .form-row {
+      display: flex;
+      gap: 28px;
+      align-items: flex-end;
+    }
+    .form-control {
+      position: relative;
+      width: 100%;
+      min-width: 240px;
+      max-width: 420px;
+      flex: 1;
+      margin-bottom: 18px;
+    }
+    .input {
+      color: #fff;
+      font-size: 1.1rem;
+      background-color: transparent;
+      width: 100%;
+      box-sizing: border-box;
+      padding-inline: 0.7em;
+      padding-block: 1.1em;
+      border: none;
+      border-bottom: 2px solid #888;
+      box-shadow: none;
+      transition: border-color 0.25s;
+    }
+    .input:focus {
+      outline: none;
+      border-bottom: 2px solid var(--input-border);
+    }
+    .input-border {
+      position: absolute;
+      background: var(--input-border);
+      width: 0%;
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      transition: width 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+    }
+    .input:focus + .input-border {
+      width: 100%;
+    }
+    label {
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 4px;
+      font-size: 1.08rem;
+      letter-spacing: 0.5px;
+      display: block;
+    }
+    .radio-input {
+      --container_width: 220px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      border-radius: 10px;
+      background-color: #fff;
+      color: #000000;
+      width: var(--container_width);
+      overflow: hidden;
+      border: 1px solid rgba(53, 52, 52, 0.226);
+      margin-top: 8px;
+      margin-bottom: 8px;
+      font-size: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+    }
+    .radio-input input {
+      display: none;
+    }
+    .radio-input label {
+      width: 100%;
+      padding: 10px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1;
+      font-weight: 600;
+      letter-spacing: -1px;
+      font-size: 15px;
+      color: #222;
+      transition: color 0.15s;
+    }
+    .radio-input label:has(input:checked) {
+      color: #fff;
+    }
+    .selection {
+      display: none;
+      position: absolute;
+      height: 100%;
+      width: calc(var(--container_width) / 2);
+      z-index: 0;
+      left: 0;
+      top: 0;
+      transition: 0.15s ease;
+      border-radius: 10px;
+    }
+    .radio-input label:has(input:checked) ~ .selection {
+      background-color: var(--accent);
+      display: inline-block;
+    }
+    .radio-input label:nth-child(1):has(input:checked) ~ .selection {
+      transform: translateX(0);
+    }
+    .radio-input label:nth-child(2):has(input:checked) ~ .selection {
+      transform: translateX(calc(var(--container_width) / 2));
+    }
+    .form-actions {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .btn-generate {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 13px 30px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px rgba(11,117,223,0.08);
+    }
+    .btn-generate:hover {
+      background: #1251a1;
+    }
+    #result {
+      margin-top: 20px;
+      width: 100%;
+    }
+    #result h3 {
+      color: #19d47b;
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    #result ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    #result li {
+      margin-bottom: 18px;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .download-label {
+      background-color: transparent;
+      border: 2px solid rgb(91, 91, 240);
+      display: flex;
+      align-items: center;
+      border-radius: 50px;
+      width: 160px;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      padding: 5px;
+      position: relative;
+      margin-left: 10px;
+      text-decoration: none;
+    }
+    .download-label .title {
+      font-size: 17px;
+      color: #fff;
+      transition: all 0.4s ease;
+      position: absolute;
+      right: 18px;
+      bottom: 14px;
+      text-align: center;
+    }
+    .download-label .circle {
+      height: 45px;
+      width: 45px;
+      border-radius: 50%;
+      background-color: rgb(91, 91, 240);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.4s ease;
+      position: relative;
+      box-shadow: 0 0 0 0 rgb(255, 255, 255);
+      overflow: hidden;
+    }
+    .download-label .circle .icon {
+      color: #fff;
+      width: 30px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: all 0.4s ease;
+    }
+    .download-label .circle .square {
+      aspect-ratio: 1;
+      width: 15px;
+      border-radius: 2px;
+      background-color: #fff;
+      opacity: 0;
+      visibility: hidden;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: all 0.4s ease;
+    }
+    .download-label .circle::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      background-color: #3333a8;
+      width: 100%;
+      height: 0;
+      transition: all 0.4s ease;
+    }
+    .download-label:active {
+      border-color: #19d47b;
+    }
+    .download-label .title:last-child {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .download-label:active .title {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .download-label:active .title:last-child {
+      opacity: 1;
+      visibility: visible;
+      right: 56px;
+    }
+    .download-label:active .circle .icon {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .download-label:active .circle .square {
+      opacity: 1;
+      visibility: visible;
+    }
+    .download-label:active .circle {
+      background-color: #19d47b;
+    }
+    .download-label:active .circle::before {
+      height: 100%;
+    }
+    .download-all {
+      display: inline-block;
+      margin-top: 18px;
+      padding: 10px 18px;
+      background: #19d47b;
+      color: #fff;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: bold;
+      border: none;
+      font-size: 1.1rem;
+      transition: background 0.2s;
+      margin-left: 8px;
+      cursor: pointer;
+    }
+    .download-all:hover {
+      background: #007e5c;
+      color: #fff;
+    }
+    .error {
+      color: #ff5252;
+      font-weight: bold;
+      margin-top: 12px;
+    }
+    footer {
+      text-align: left;
+      margin-top: 0;
+      color: #888;
+      font-size: 0.95rem;
+      padding: 0 0 0 10px;
+      background: none;
+    }
+    @media (max-width: 1100px) {
+      .main-content {
+        flex-direction: column;
+        gap: 24px;
+        padding: 24px;
+      }
+      .right-panel {
+        padding-left: 0;
+        border-left: none;
+        margin-top: 32px;
+      }
+      .left-panel {
+        padding-right: 0;
+      }
+    }
+    /* Custom Dropdown Styles */
+    .select {
+      width: 220px;
+      cursor: pointer;
+      position: relative;
+      color: white;
+      font-size: 15px;
+      user-select: none;
+      z-index: 100;
+    }
+    .selected {
+      background-color: #2a2f3b;
+      padding: 10px 14px;
+      border-radius: 6px;
+      border: 1px solid #444;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: box-shadow 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .selected.open {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+      border-color: #00fff7;
+    }
+    .arrow {
+      margin-left: 10px;
+      transition: transform 0.3s;
+      width: 18px;
+      height: 18px;
+      fill: white;
+    }
+    .selected.open .arrow {
+      transform: rotate(180deg);
+    }
+    .options {
+      display: none;
+      flex-direction: column;
+      border-radius: 6px;
+      background-color: #2a2f3b;
+      position: absolute;
+      top: 110%;
+      left: 0;
+      width: 100%;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+      z-index: 999;
+      padding: 5px 0;
+      border: 1px solid #444;
+      animation: dropdownFade 0.22s;
+    }
+    .select.open .options {
+      display: flex;
+    }
+    @keyframes dropdownFade {
+      from { opacity: 0; transform: translateY(-10px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    .option {
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background 0.18s;
+      border: none;
+      background: none;
+      color: #fff;
+      font-size: 15px;
+      text-align: left;
+    }
+    .option:hover, .option.selected {
+      background-color: #32425c;
+      color: #00fff7;
+    }/* From Uiverse.io by PriyanshuGupta28 */
+    .checkbox-wrapper:hover .check {
+      stroke-dashoffset: 0;
+    }
+
+    .checkbox-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      margin-right: 12px;
+    }
+
+    .checkbox-wrapper .background {
+      fill: rgb(75, 50, 121);
+      transition: ease all 0.6s;
+      -webkit-transition: ease all 0.6s;
+    }
+
+    .checkbox-wrapper .stroke {
+      fill: none;
+      stroke: #fff;
+      stroke-miterlimit: 10;
+      stroke-width: 2px;
+      stroke-dashoffset: 100;
+      stroke-dasharray: 100;
+      transition: ease all 0.6s;
+      -webkit-transition: ease all 0.6s;
+    }
+
+    .checkbox-wrapper .check {
+      fill: none;
+      stroke: #fff;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 2px;
+      stroke-dashoffset: 22;
+      stroke-dasharray: 22;
+      transition: ease all 0.6s;
+      -webkit-transition: ease all 0.6s;
+    }
+
+    .checkbox-wrapper input[type=checkbox] {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+      margin: 0;
+      opacity: 0;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .checkbox-wrapper input[type=checkbox]:hover {
+      cursor: pointer;
+    }
+
+    .checkbox-wrapper input[type=checkbox]:checked + svg .background {
+      fill: #421c64;
+    }
+
+    .checkbox-wrapper input[type=checkbox]:checked + svg .stroke {
+      stroke-dashoffset: 0;
+    }
+
+    .checkbox-wrapper input[type=checkbox]:checked + svg .check {
+      stroke-dashoffset: 0;
+    }
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  margin-right: 24px;
+  font-size: 1rem;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <img src="/static/cat.jpg" alt="Logo" class="logo">
+    <h1>HN Code</h1>
+    <div id="template-dropdown" style="margin-left:auto;">
+      <div class="select">
+        <div class="selected" id="selected-company">-- Select a Company --</div>
+        <div class="options">
+          <div class="option" data-value="">-- Select a Company --</div>
+          <div class="option" data-value="ROYAL_SKY_INTERNATIONAL">ROYAL SKY INTERNATIONAL</div>
+          <div class="option" data-value="NEW_VISION">NEW VISION</div>
+          <div class="option" data-value="SNS_GLOBLE">SNS GLOBLE</div>
+        </div>
+      </div>
+      <input type="hidden" id="company" name="company_name_dropdown" required>
+    </div>
+  </header>
+  <div class="main-content">
+    <div class="left-panel">
+      <section class="status-section">
+        <h2>Documents downloader</h2>
+        <form id="trackForm" autocomplete="off">
+          <!-- HERE I WANT CHECK BOXS -->
+          <div class="form-row">
+            <div class="form-control" style="display:flex; gap:40px;">
+              <label class="checkbox-label">
+                <div class="checkbox-wrapper">
+                  <input type="checkbox" class="check" id="check-agreement" value="agreement" checked>
+                  <svg viewBox="0 0 35.6 35.6">
+                    <circle class="background" cx="17.8" cy="17.8" r="17.8"></circle>
+                    <circle class="stroke" cx="17.8" cy="17.8" r="14.37"></circle>
+                    <polyline class="check" points="11.78 18.12 15.55 22.23 25.17 12.87"></polyline>
+                  </svg>
+                </div>
+                Agreement
+              </label>
+              <label class="checkbox-label">
+                <div class="checkbox-wrapper">
+                  <input type="checkbox" class="check" id="check-afi" value="afi_noc" checked>
+                  <svg viewBox="0 0 35.6 35.6">
+                    <circle class="background" cx="17.8" cy="17.8" r="17.8"></circle>
+                    <circle class="stroke" cx="17.8" cy="17.8" r="14.37"></circle>
+                    <polyline class="check" points="11.78 18.12 15.55 22.23 25.17 12.87"></polyline>
+                  </svg>
+                </div>
+                AFFDAVITE
+              </label>
+              <label class="checkbox-label">
+                <div class="checkbox-wrapper">
+                  <input type="checkbox" class="check" id="check-request" value="request_letter" checked>
+                  <svg viewBox="0 0 35.6 35.6">
+                    <circle class="background" cx="17.8" cy="17.8" r="17.8"></circle>
+                    <circle class="stroke" cx="17.8" cy="17.8" r="14.37"></circle>
+                    <polyline class="check" points="11.78 18.12 15.55 22.23 25.17 12.87"></polyline>
+                  </svg>
+                </div>
+                Request_Letter
+              </label>
+              
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-control">
+              <label for="passportNumber">Passport number</label>
+              <input class="input input-alt" id="passportNumber" placeholder="Enter Passport Number" required type="text">
+              <span class="input-border input-border-alt"></span>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-generate">Generate</button>
+            </div>
+          </div>
+          <div class="radio-input" style="margin-top:8px;">
+            <label>
+              <input value="pdf" name="outputFormat" id="pdf" type="radio" checked />
+              <span>PDF</span>
+            </label>
+            <label>
+              <input value="docx" name="outputFormat" id="docx" type="radio" />
+              <span>DOC</span>
+            </label>
+            <span class="selection"></span>
+          </div>
+        </form>
+      </section>
+    </div>
+    <div class="right-panel">
+      <div id="result"></div>
+    </div>
+  </div>
+  <footer>
+    <img src="/static/cat 2.jpg" alt="Logo" class="logo" style="height:40px;width:40px;vertical-align:middle;">
+  </footer>
+</div>
+<script>
+function createDownloadButton(url, filename) {
+  return `
+    <a href="${url}" class="download-label" title="Download ${filename}" onclick="event.preventDefault(); forceDownload('${url}', '${filename}')">
+      <span class="circle">
+        <svg class="icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M12 19V5m0 14-4-4m4 4 4-4"></path>
+        </svg>
+        <div class="square"></div>
+      </span>
+      <span class="title">Download</span>
+      <span class="title">Open</span>
+    </a>
+  `;
+}
+
+function forceDownload(url, filename) {
+  fetch(url)
+    .then(resp => resp.blob())
+    .then(blob => {
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => {
+        window.URL.revokeObjectURL(link.href);
+        document.body.removeChild(link);
+      }, 100);
+    });
+}
+
+function downloadAllFiles() {
+  const passportNumber = document.getElementById('passportNumber').value;
+  const outputFormat = document.querySelector('input[name="outputFormat"]:checked').value;
+  const company = document.getElementById('company').value;
+  const docCheckboxes = document.querySelectorAll('.checkbox-wrapper .check');
+  const selectedDocs = Array.from(docCheckboxes)
+    .filter(cb => cb.checked)
+    .map(cb => cb.value);
+
+  fetch('/download-all', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      passportNumber: passportNumber,
+      outputFormat: outputFormat,
+      company: company,
+      selectedDocs: selectedDocs
+    })
+  })
+  .then(response => response.blob())
+  .then(blob => {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Documents-${passportNumber}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    }, 100);
+  })
+  .catch(error => {
+    console.error('Error downloading files:', error);
+    document.getElementById('result').innerHTML += `<p class="error">Error downloading all files: ${error.message}</p>`;
+  });
+}
+
+
+// Custom Dropdown JS
+document.addEventListener('DOMContentLoaded', function() {
+  const select = document.querySelector('.select');
+  const selected = select.querySelector('.selected');
+  const options = select.querySelector('.options');
+  const hiddenInput = document.getElementById('company');
+  const optionsList = options.querySelectorAll('.option');
+
+  selected.addEventListener('click', () => {
+    select.classList.toggle('open');
+    options.style.display = select.classList.contains('open') ? 'flex' : 'none';
+  });
+
+  optionsList.forEach(option => {
+    option.addEventListener('click', () => {
+      selected.textContent = option.textContent;
+      hiddenInput.value = option.dataset.value;
+      // FIX: Trigger change event so /set-template is called!
+      hiddenInput.dispatchEvent(new Event('change'));
+      select.classList.remove('open');
+      options.style.display = 'none';
+    });
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!select.contains(e.target)) {
+      select.classList.remove('open');
+      options.style.display = 'none';
+    }
+  });
+});
+
+document.getElementById('trackForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+  const passportNumber = document.getElementById('passportNumber').value;
+  const outputFormat = document.querySelector('input[name="outputFormat"]:checked').value;
+  const company = document.getElementById('company').value;
+
+  // Collect checked document types
+  const docCheckboxes = document.querySelectorAll('.checkbox-wrapper .check');
+  const selectedDocs = Array.from(docCheckboxes)
+    .filter(cb => cb.checked)
+    .map(cb => cb.value);
+
+  if (!company) {
+    alert('Please select a company');
+    return;
+  }
+  if (selectedDocs.length === 0) {
+    alert('Please select at least one document');
+    return;
+  }
+
+  document.getElementById('result').innerHTML = '<p>Processing...</p>';
+
+  fetch('/process', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      passportNumber: passportNumber,
+      outputFormat: outputFormat,
+      company: company,
+      selectedDocs: selectedDocs // <-- send selected docs
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      let resultHTML = '<h3>Documents generated</h3><ul>';
+      data.files.forEach(file => {
+        resultHTML += `<li>${file.name} ${createDownloadButton(file.url, file.name)}</li>`;
+      });
+      resultHTML += '</ul>';
+      if (data.files.length > 1) {
+        resultHTML += `<button class="download-all" onclick="downloadAllFiles()">Download All</button>`;
+      }
+      document.getElementById('result').innerHTML = resultHTML;
+    } else {
+      document.getElementById('result').innerHTML = `<p class="error">${data.message || data.error || 'Error generating documents'}</p>`;
+    }
+  })
+  .catch(error => {
+    document.getElementById('result').innerHTML = `<p class="error">Network or server error: ${error.message}</p>`;
+  });
+});
+
+document.getElementById('company').addEventListener('change', function() {
+  fetch('/set-template', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ company_name_dropdown: this.value })
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('/set-template response:', data);
+  });
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+body {
+    background: #181c24;
+    color: #f5f5f5;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    max-width: 1200px;
+    margin: 30px auto;
+    background: #23272f;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    padding: 0;
+    min-height: 90vh;
+}
+header {
+    display: flex;
+    align-items: center;
+    background: #2e3748;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    padding: 16px 32px;
+    gap: 18px;
+}
+.logo {
+    height: 48px;
+    width: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #fff;
+    border: 2px solid #eee;
+}
+h1 {
+    margin: 0;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #fff;
+}
+.main-content {
+    display: flex;
+    flex-direction: row;
+    padding: 32px;
+    gap: 32px;
+}
+.left-panel {
+    flex: 1;
+    min-width: 320px;
+    max-width: 340px;
+}
+.right-panel {
+    flex: 2;
+    min-width: 320px;
+    padding-left: 32px;
+    border-left: 2px solid #333;
+}
+.status-section h2 {
+    color: #00fff7;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 20px;
+}
+form label {
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 4px;
+    margin-top: 6px;
+    font-size: 1.1rem;
+}
+form input[type="text"] {
+    background: #e2e6ea;
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    color: #23272f;
+    font-size: 1rem;
+    margin-bottom: 2px;
+    outline: none;
+}
+.output-format {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 8px;
+}
+.output-format label {
+    font-size: 1rem;
+    font-weight: normal;
+    color: #eee;
+    margin: 0 8px 0 0;
+}
+form button {
+    background: #0077ff;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 22px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 8px;
+    align-self: flex-start;
+    transition: background 0.2s;
+}
+form button:hover {
+    background: #005fa3;
+}
+#result {
+    margin-top: 20px;
+}
+#result ul {
+    list-style: none;
+    padding: 0;
+}
+#result li {
+    margin-bottom: 8px;
+}
+.download-all {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 10px 18px;
+    background: #00fff7;
+    color: #23272f;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+.download-all:hover {
+    background: #00b8a9;
+    color: #fff;
+}
+.error {
+    color: #ff5252;
+    font-weight: bold;
+}
+footer {
+    text-align: left;
+    margin-top: 0;
+    color: #888;
+    font-size: 0.95rem;
+    padding: 0 0 0 10px;
+    background: none;
+}
+@media (max-width: 900px) {
+    .main-content {
+        flex-direction: column;
+        gap: 24px;
+        padding: 24px;
+    }
+    .right-panel {
+        padding-left: 0;
+        border-left: none;
+        margin-top: 32px;
+    }
+}
